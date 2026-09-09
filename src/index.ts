@@ -1,7 +1,8 @@
 import { serve } from "@hono/node-server";
+import { Hono } from "hono";
 import app, { ready } from "./app.js";
 
-export default app;
+export default app satisfies Hono;
 
 if (!process.env.VERCEL) {
   void ready
