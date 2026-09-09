@@ -13,19 +13,6 @@
     {
       "url": "http://localhost:3000",
       "description": "ローカル"
-    },
-    {
-      "url": "/",
-      "description": "このサーバー"
-    },
-    {
-      "url": "{url}",
-      "description": "任意の URL",
-      "variables": {
-        "url": {
-          "default": "http://localhost:3000"
-        }
-      }
     }
   ],
   "tags": [
