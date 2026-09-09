@@ -237,6 +237,9 @@ describe("REST", () => {
     expect(html).toContain("builtinServers");
     expect(html).toContain("mountServerBar");
     expect(html).toContain("ServersContainer");
+    expect(html).toContain('placeholder="http://localhost:3000"');
+    expect(html).toContain('const sampleServer = "http://localhost:3000"');
+    expect(html).not.toContain("defaultServer");
     expect(html).not.toContain("applyServer(initial)");
   });
 });

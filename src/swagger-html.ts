@@ -63,12 +63,7 @@ export function renderSwaggerHtml(spec: unknown): string {
   <script>
     const spec = ${specJson};
     const builtinServers = Array.isArray(spec.servers) ? spec.servers.slice() : [];
-    function defaultServer() {
-      if (location.protocol === "file:" || location.origin === "null") {
-        return "http://localhost:3000";
-      }
-      return location.origin;
-    }
+    const sampleServer = "http://localhost:3000";
     function applyServer(url) {
       const normalized = url.replace(/\\/$/, "");
       if (!normalized) {
@@ -87,7 +82,7 @@ export function renderSwaggerHtml(spec: unknown): string {
         applyServer(form.elements.url.value.trim());
       });
       if (!form.elements.url.value) {
-        form.elements.url.value = defaultServer();
+        form.elements.url.value = sampleServer;
       }
     }
     function mountServerBar() {
@@ -131,8 +126,8 @@ export function renderSwaggerHtml(spec: unknown): string {
                       name: "url",
                       type: "url",
                       required: true,
-                      placeholder: "http://localhost:3000",
-                      defaultValue: defaultServer()
+                      placeholder: sampleServer,
+                      defaultValue: sampleServer
                     }),
                     React.createElement("button", { type: "submit" }, "適用")
                   )
