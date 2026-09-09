@@ -200,12 +200,18 @@ describe("REST", () => {
       openapi: string;
       paths: Record<string, unknown>;
       servers?: { url: string }[];
+      info?: { description?: string; contact?: { url?: string } };
+      externalDocs?: { url?: string; description?: string };
     };
     expect(res.status).toBe(200);
     expect(body.openapi).toBe("3.1.0");
     expect(body.paths["/v1/lookup"]).toBeDefined();
     expect(body.paths["/v1/holidays"]).toBeDefined();
     expect(body.servers?.some((server: { url: string }) => server.url === "{url}")).toBe(true);
+    expect(body.info?.description).toContain("https://github.com/shigeya-t/japan-national-holidays-api");
+    expect(body.info?.contact?.url).toBe("https://github.com/shigeya-t/japan-national-holidays-api");
+    expect(body.externalDocs?.url).toBe("https://github.com/shigeya-t/japan-national-holidays-api");
+    expect(body.externalDocs?.description).toBe("参照先");
   });
 
   it("GET /docs serves Swagger UI", async () => {
@@ -216,5 +222,6 @@ describe("REST", () => {
     expect(html).toContain("swagger-ui");
     expect(html).toContain("日本の祝日 API");
     expect(html).toContain('id="server-url"');
+    expect(html).toContain("https://github.com/shigeya-t/japan-national-holidays-api");
   });
 });
