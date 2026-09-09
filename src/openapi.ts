@@ -20,17 +20,10 @@ export function openApiDocument(store: HolidayStore) {
         `収録期間: ${health.from} 〜 ${health.until}`,
         "参照先: [https://github.com/shigeya-t/japan-national-holidays-api](https://github.com/shigeya-t/japan-national-holidays-api)",
       ].join("\n\n"),
-      contact: {
-        name: "GitHub",
-        url: "https://github.com/shigeya-t/japan-national-holidays-api",
-      },
-    },
-    externalDocs: {
-      description: "参照先",
-      url: "https://github.com/shigeya-t/japan-national-holidays-api",
     },
     servers: [
       { url: "/", description: "このサーバー" },
+      { url: "https://japan-national-holidays-api.vercel.app", description: "公開" },
       { url: "http://localhost:3000", description: "ローカル" },
       {
         url: "{url}",
