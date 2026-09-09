@@ -9,18 +9,78 @@
     html { box-sizing: border-box; overflow-y: scroll; }
     *, *::before, *::after { box-sizing: inherit; }
     body { margin: 0; background: #fafafa; }
+    .server-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      padding: 12px 20px;
+      background: #1b1b1b;
+      color: #fff;
+      font-family: sans-serif;
+      font-size: 14px;
+    }
+    .server-bar label { font-weight: 600; }
+    .server-bar input {
+      flex: 1;
+      min-width: 16rem;
+      padding: 8px 10px;
+      border: 0;
+      border-radius: 4px;
+      font: inherit;
+    }
+    .server-bar button {
+      padding: 8px 14px;
+      border: 0;
+      border-radius: 4px;
+      background: #89bf04;
+      color: #1b1b1b;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
+  <form class="server-bar" id="server-form">
+    <label for="server-url">任意の URL</label>
+    <input id="server-url" name="url" type="url" required placeholder="http://localhost:3000" />
+    <button type="submit">適用</button>
+  </form>
   <div id="swagger-ui"></div>
   <script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-bundle.js" crossorigin></script>
   <script>
+    const spec = {"openapi":"3.1.0","info":{"title":"日本の祝日 API","version":"1.0.0","description":"内閣府の国民の祝日 CSV をデータ源とする REST API。\n\nタイムゾーンは Asia/Tokyo。kind は推定値。会社独自の休日は含まない。\n\n収録期間: 1955-01-01 〜 2027-12-31\n\n参照先: [https://github.com/shigeya-t/japan-national-holidays-api](https://github.com/shigeya-t/japan-national-holidays-api)"},"servers":[{"url":"https://japan-national-holidays-api.vercel.app","description":"公開"},{"url":"http://localhost:3000","description":"ローカル"}],"tags":[{"name":"health","description":"稼働状況"},{"name":"holidays","description":"祝日・営業日"}],"paths":{"/health":{"get":{"tags":["health"],"summary":"件数・ソース・収録期間","operationId":"getHealth","responses":{"200":{"description":"OK","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Health"}}}}}}},"/v1/lookup":{"get":{"tags":["holidays"],"summary":"指定日の祝日判定","operationId":"lookupHoliday","parameters":[{"name":"year","in":"query","required":true,"schema":{"type":"integer","example":2026}},{"name":"month","in":"query","required":true,"schema":{"type":"integer","minimum":1,"maximum":12,"example":1}},{"name":"day","in":"query","required":true,"schema":{"type":"integer","minimum":1,"maximum":31,"example":1}}],"responses":{"200":{"description":"判定結果","content":{"application/json":{"schema":{"$ref":"#/components/schemas/DateInfo"}}}},"400":{"description":"不正な日付またはクエリ","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Error"}}}}}}},"/v1/today":{"get":{"tags":["holidays"],"summary":"東京の今日","operationId":"lookupToday","responses":{"200":{"description":"今日の判定","content":{"application/json":{"schema":{"$ref":"#/components/schemas/DateInfo"}}}}}}},"/v1/next":{"get":{"tags":["holidays"],"summary":"次の祝日","description":"from 当日が祝日ならそれを含める。count は 1〜20。","operationId":"nextHolidays","parameters":[{"name":"from","in":"query","required":false,"schema":{"type":"string","format":"date","example":"2026-09-09"}},{"name":"count","in":"query","required":false,"schema":{"type":"integer","minimum":1,"maximum":20,"default":1}}],"responses":{"200":{"description":"祝日一覧。件数が足りないときは until を付ける","content":{"application/json":{"schema":{"$ref":"#/components/schemas/NextHolidays"}}}},"400":{"description":"不正なパラメータ","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Error"}}}}}}},"/v1/business-day":{"get":{"tags":["holidays"],"summary":"営業日判定","description":"月〜金かつ非祝日。会社独自の休日は対象外。","operationId":"isBusinessDay","parameters":[{"name":"year","in":"query","required":true,"schema":{"type":"integer","example":2026}},{"name":"month","in":"query","required":true,"schema":{"type":"integer","minimum":1,"maximum":12,"example":9}},{"name":"day","in":"query","required":true,"schema":{"type":"integer","minimum":1,"maximum":31,"example":9}}],"responses":{"200":{"description":"判定結果（businessDay が主結果）","content":{"application/json":{"schema":{"$ref":"#/components/schemas/DateInfo"}}}},"400":{"description":"不正な日付またはクエリ","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Error"}}}}}}},"/v1/holidays":{"get":{"tags":["holidays"],"summary":"祝日一覧・名称検索","description":"year/month と from/to は AND（交差）。q があるときは部分一致のあと曖昧検索。","operationId":"listOrSearchHolidays","parameters":[{"name":"year","in":"query","schema":{"type":"integer","example":2026}},{"name":"month","in":"query","schema":{"type":"integer","minimum":1,"maximum":12}},{"name":"from","in":"query","schema":{"type":"string","format":"date","example":"2026-01-01"}},{"name":"to","in":"query","schema":{"type":"string","format":"date","example":"2026-03-31"}},{"name":"q","in":"query","schema":{"type":"string","example":"成人"}},{"name":"limit","in":"query","schema":{"type":"integer","minimum":1,"maximum":100,"default":20}}],"responses":{"200":{"description":"一覧。検索時は score が付くことがある","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HolidaysEnvelope"}}}},"400":{"description":"不正なパラメータ","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Error"}}}}}}}},"components":{"schemas":{"DateInfo":{"type":"object","required":["date","holiday","name","kind","weekday","businessDay","available"],"properties":{"date":{"type":"string","format":"date","example":"2026-01-01"},"holiday":{"type":["boolean","null"]},"name":{"type":["string","null"],"example":"元日"},"kind":{"type":["string","null"],"enum":["国民の祝日","振替休日","国民の休日","祝日扱い","皇室行事",null]},"weekday":{"type":"string","enum":["日","月","火","水","木","金","土"],"example":"木"},"businessDay":{"type":["boolean","null"]},"available":{"type":"boolean"},"score":{"type":"number","description":"曖昧検索時のみ。0 が最良"}}},"Health":{"type":"object","required":["ok","source","count","updatedAt","from","until"],"properties":{"ok":{"type":"boolean"},"source":{"type":"string","enum":["official","bundled"]},"count":{"type":"integer","example":1067},"updatedAt":{"type":"string","format":"date-time"},"from":{"type":"string","format":"date","example":"1955-01-01"},"until":{"type":"string","format":"date","example":"2027-12-31"}}},"HolidaysEnvelope":{"type":"object","required":["holidays","total"],"properties":{"holidays":{"type":"array","items":{"$ref":"#/components/schemas/DateInfo"}},"total":{"type":"integer"}}},"NextHolidays":{"type":"object","required":["holidays","total"],"properties":{"holidays":{"type":"array","items":{"$ref":"#/components/schemas/DateInfo"}},"total":{"type":"integer"},"until":{"type":"string","format":"date","description":"件数が足りないときに収録終端"}}},"Error":{"type":"object","required":["error"],"additionalProperties":true,"properties":{"error":{"type":"string","example":"invalid_date"}}}}}};
+    const builtinServers = Array.isArray(spec.servers) ? spec.servers.slice() : [];
+    function defaultServer() {
+      if (location.protocol === "file:" || location.origin === "null") {
+        return "http://localhost:3000";
+      }
+      return location.origin;
+    }
+    function applyServer(url) {
+      const normalized = url.replace(/\/$/, "");
+      if (!normalized) {
+        spec.servers = builtinServers.slice();
+      } else {
+        const custom = { url: normalized, description: "指定したサーバー" };
+        spec.servers = [custom, ...builtinServers.filter((server) => server.url !== custom.url)];
+      }
+      if (window.ui) {
+        window.ui.specActions.updateJsonSpec(structuredClone(spec));
+      }
+    }
+    document.getElementById("server-url").value = defaultServer();
     window.ui = SwaggerUIBundle({
-      spec: {"openapi":"3.1.0","info":{"title":"日本の祝日 API","version":"1.0.0","description":"内閣府の国民の祝日 CSV をデータ源とする REST API。\n\nタイムゾーンは Asia/Tokyo。kind は推定値。会社独自の休日は含まない。\n\n収録期間: 1955-01-01 〜 2027-12-31\n\n参照先: [https://github.com/shigeya-t/japan-national-holidays-api](https://github.com/shigeya-t/japan-national-holidays-api)"},"servers":[{"url":"https://japan-national-holidays-api.vercel.app","description":"公開"},{"url":"http://localhost:3000","description":"ローカル"}],"tags":[{"name":"health","description":"稼働状況"},{"name":"holidays","description":"祝日・営業日"}],"paths":{"/health":{"get":{"tags":["health"],"summary":"件数・ソース・収録期間","operationId":"getHealth","responses":{"200":{"description":"OK","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Health"}}}}}}},"/v1/lookup":{"get":{"tags":["holidays"],"summary":"指定日の祝日判定","operationId":"lookupHoliday","parameters":[{"name":"year","in":"query","required":true,"schema":{"type":"integer","example":2026}},{"name":"month","in":"query","required":true,"schema":{"type":"integer","minimum":1,"maximum":12,"example":1}},{"name":"day","in":"query","required":true,"schema":{"type":"integer","minimum":1,"maximum":31,"example":1}}],"responses":{"200":{"description":"判定結果","content":{"application/json":{"schema":{"$ref":"#/components/schemas/DateInfo"}}}},"400":{"description":"不正な日付またはクエリ","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Error"}}}}}}},"/v1/today":{"get":{"tags":["holidays"],"summary":"東京の今日","operationId":"lookupToday","responses":{"200":{"description":"今日の判定","content":{"application/json":{"schema":{"$ref":"#/components/schemas/DateInfo"}}}}}}},"/v1/next":{"get":{"tags":["holidays"],"summary":"次の祝日","description":"from 当日が祝日ならそれを含める。count は 1〜20。","operationId":"nextHolidays","parameters":[{"name":"from","in":"query","required":false,"schema":{"type":"string","format":"date","example":"2026-09-09"}},{"name":"count","in":"query","required":false,"schema":{"type":"integer","minimum":1,"maximum":20,"default":1}}],"responses":{"200":{"description":"祝日一覧。件数が足りないときは until を付ける","content":{"application/json":{"schema":{"$ref":"#/components/schemas/NextHolidays"}}}},"400":{"description":"不正なパラメータ","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Error"}}}}}}},"/v1/business-day":{"get":{"tags":["holidays"],"summary":"営業日判定","description":"月〜金かつ非祝日。会社独自の休日は対象外。","operationId":"isBusinessDay","parameters":[{"name":"year","in":"query","required":true,"schema":{"type":"integer","example":2026}},{"name":"month","in":"query","required":true,"schema":{"type":"integer","minimum":1,"maximum":12,"example":9}},{"name":"day","in":"query","required":true,"schema":{"type":"integer","minimum":1,"maximum":31,"example":9}}],"responses":{"200":{"description":"判定結果（businessDay が主結果）","content":{"application/json":{"schema":{"$ref":"#/components/schemas/DateInfo"}}}},"400":{"description":"不正な日付またはクエリ","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Error"}}}}}}},"/v1/holidays":{"get":{"tags":["holidays"],"summary":"祝日一覧・名称検索","description":"year/month と from/to は AND（交差）。q があるときは部分一致のあと曖昧検索。","operationId":"listOrSearchHolidays","parameters":[{"name":"year","in":"query","schema":{"type":"integer","example":2026}},{"name":"month","in":"query","schema":{"type":"integer","minimum":1,"maximum":12}},{"name":"from","in":"query","schema":{"type":"string","format":"date","example":"2026-01-01"}},{"name":"to","in":"query","schema":{"type":"string","format":"date","example":"2026-03-31"}},{"name":"q","in":"query","schema":{"type":"string","example":"成人"}},{"name":"limit","in":"query","schema":{"type":"integer","minimum":1,"maximum":100,"default":20}}],"responses":{"200":{"description":"一覧。検索時は score が付くことがある","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HolidaysEnvelope"}}}},"400":{"description":"不正なパラメータ","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Error"}}}}}}}},"components":{"schemas":{"DateInfo":{"type":"object","required":["date","holiday","name","kind","weekday","businessDay","available"],"properties":{"date":{"type":"string","format":"date","example":"2026-01-01"},"holiday":{"type":["boolean","null"]},"name":{"type":["string","null"],"example":"元日"},"kind":{"type":["string","null"],"enum":["国民の祝日","振替休日","国民の休日","祝日扱い","皇室行事",null]},"weekday":{"type":"string","enum":["日","月","火","水","木","金","土"],"example":"木"},"businessDay":{"type":["boolean","null"]},"available":{"type":"boolean"},"score":{"type":"number","description":"曖昧検索時のみ。0 が最良"}}},"Health":{"type":"object","required":["ok","source","count","updatedAt","from","until"],"properties":{"ok":{"type":"boolean"},"source":{"type":"string","enum":["official","bundled"]},"count":{"type":"integer","example":1067},"updatedAt":{"type":"string","format":"date-time"},"from":{"type":"string","format":"date","example":"1955-01-01"},"until":{"type":"string","format":"date","example":"2027-12-31"}}},"HolidaysEnvelope":{"type":"object","required":["holidays","total"],"properties":{"holidays":{"type":"array","items":{"$ref":"#/components/schemas/DateInfo"}},"total":{"type":"integer"}}},"NextHolidays":{"type":"object","required":["holidays","total"],"properties":{"holidays":{"type":"array","items":{"$ref":"#/components/schemas/DateInfo"}},"total":{"type":"integer"},"until":{"type":"string","format":"date","description":"件数が足りないときに収録終端"}}},"Error":{"type":"object","required":["error"],"additionalProperties":true,"properties":{"error":{"type":"string","example":"invalid_date"}}}}}},
+      spec,
       dom_id: "#swagger-ui",
       deepLinking: true,
       presets: [SwaggerUIBundle.presets.apis],
       layout: "BaseLayout"
+    });
+    document.getElementById("server-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      applyServer(document.getElementById("server-url").value.trim());
     });
   </script>
 </body>

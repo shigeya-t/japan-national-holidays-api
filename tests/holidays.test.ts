@@ -230,7 +230,11 @@ describe("REST", () => {
     expect(html).toContain('"url":"http://localhost:3000"');
     expect(html).not.toContain('"url":"/"');
     expect(html).not.toContain('"{url}"');
-    expect(html).not.toContain("server-form");
+    expect(html).toContain('id="server-form"');
+    expect(html).toContain('id="server-url"');
+    expect(html).toContain("任意の URL");
+    expect(html).toContain("builtinServers");
+    expect(html).not.toContain("applyServer(initial)");
   });
 });
 
