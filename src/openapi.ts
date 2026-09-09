@@ -24,16 +24,6 @@ export function openApiDocument(store: HolidayStore) {
     servers: [
       { url: "https://japan-national-holidays-api.vercel.app", description: "公開" },
       { url: "http://localhost:3000", description: "ローカル" },
-      { url: "/", description: "このサーバー" },
-      {
-        url: "{url}",
-        description: "任意の URL",
-        variables: {
-          url: {
-            default: "http://localhost:3000",
-          },
-        },
-      },
     ],
     tags: [
       { name: "health", description: "稼働状況" },
