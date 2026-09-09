@@ -1,14 +1,19 @@
 import { serve } from "@hono/node-server";
-import { createApp } from "./app.js";
-import { HolidayStore } from "./holidays/store.js";
+import { Hono } from "hono";
+import app, { ready } from "./app.js";
 
-const port = Number(process.env.PORT ?? 3000);
-const store = new HolidayStore();
-await store.init();
-store.startRefresh();
+export default app satisfies Hono;
 
-const app = createApp(store);
-
-serve({ fetch: app.fetch, port }, (info) => {
-  console.log(`listening on http://localhost:${info.port}`);
-});
+if (!process.env.VERCEL) {
+  void ready
+    .then(() => {
+      const port = Number(process.env.PORT ?? 3000);
+      serve({ fetch: app.fetch, port }, (info) => {
+        console.log(`listening on http://localhost:${info.port}`);
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+      process.exit(1);
+    });
+}

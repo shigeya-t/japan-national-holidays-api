@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { createApp } from "../src/app.js";
+import { createApp } from "../src/create-app.js";
 import { HolidayStore } from "../src/holidays/store.js";
 
 const store = new HolidayStore();

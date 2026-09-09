@@ -1,11 +1,15 @@
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { fetchOfficialCsv, parseHolidayCsv, readBundledCsv } from "./csv.js";
 import type { DataSource, HolidayRecord } from "./types.js";
 
 const REFRESH_MS = 24 * 60 * 60 * 1000;
 
 export function bundledCsvPath(): string {
-  return process.env.BUNDLED_CSV_PATH ?? path.join(process.cwd(), "data/syukujitsu.csv");
+  return (
+    process.env.BUNDLED_CSV_PATH ??
+    path.join(path.dirname(fileURLToPath(import.meta.url)), "../../data/syukujitsu.csv")
+  );
 }
 
 export class HolidayStore {
