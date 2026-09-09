@@ -1,14 +1,11 @@
 import { serve } from "@hono/node-server";
-import { createApp } from "./app.js";
-import { HolidayStore } from "./holidays/store.js";
+import app from "./app.js";
 
-const port = Number(process.env.PORT ?? 3000);
-const store = new HolidayStore();
-await store.init();
-store.startRefresh();
+export default app;
 
-const app = createApp(store);
-
-serve({ fetch: app.fetch, port }, (info) => {
-  console.log(`listening on http://localhost:${info.port}`);
-});
+if (!process.env.VERCEL) {
+  const port = Number(process.env.PORT ?? 3000);
+  serve({ fetch: app.fetch, port }, (info) => {
+    console.log(`listening on http://localhost:${info.port}`);
+  });
+}
