@@ -9,23 +9,30 @@
     html { box-sizing: border-box; overflow-y: scroll; }
     *, *::before, *::after { box-sizing: inherit; }
     body { margin: 0; background: #fafafa; }
+    .servers-with-custom {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+      width: 100%;
+    }
     .server-bar {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       align-items: center;
-      padding: 12px 20px;
-      background: #1b1b1b;
-      color: #fff;
+      width: 100%;
+      max-width: 40rem;
       font-family: sans-serif;
       font-size: 14px;
+      color: #3b4151;
     }
     .server-bar label { font-weight: 600; }
     .server-bar input {
       flex: 1;
       min-width: 16rem;
       padding: 8px 10px;
-      border: 0;
+      border: 1px solid #d8dde3;
       border-radius: 4px;
       font: inherit;
     }
@@ -42,11 +49,13 @@
   </style>
 </head>
 <body>
-  <form class="server-bar" id="server-form">
-    <label for="server-url">任意の URL</label>
-    <input id="server-url" name="url" type="url" required placeholder="http://localhost:3000" />
-    <button type="submit">適用</button>
-  </form>
+  <template id="server-form-template">
+    <form class="server-bar" id="server-form">
+      <label for="server-url">任意の URL</label>
+      <input id="server-url" name="url" type="url" required placeholder="http://localhost:3000" />
+      <button type="submit">適用</button>
+    </form>
+  </template>
   <div id="swagger-ui"></div>
   <script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-bundle.js" crossorigin></script>
   <script>
@@ -70,17 +79,68 @@
         window.ui.specActions.updateJsonSpec(structuredClone(spec));
       }
     }
-    document.getElementById("server-url").value = defaultServer();
+    function bindServerForm(form) {
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        applyServer(form.elements.url.value.trim());
+      });
+      if (!form.elements.url.value) {
+        form.elements.url.value = defaultServer();
+      }
+    }
+    function mountServerBar() {
+      if (document.querySelector("#swagger-ui #server-url")) return;
+      const host = document.querySelector("#swagger-ui .servers");
+      const template = document.getElementById("server-form-template");
+      if (!host || !template) return;
+      const form = template.content.firstElementChild.cloneNode(true);
+      bindServerForm(form);
+      host.after(form);
+    }
     window.ui = SwaggerUIBundle({
       spec,
       dom_id: "#swagger-ui",
       deepLinking: true,
       presets: [SwaggerUIBundle.presets.apis],
-      layout: "BaseLayout"
-    });
-    document.getElementById("server-form").addEventListener("submit", (event) => {
-      event.preventDefault();
-      applyServer(document.getElementById("server-url").value.trim());
+      layout: "BaseLayout",
+      plugins: [function customServerBarPlugin() {
+        return {
+          wrapComponents: {
+            ServersContainer: function (Original, system) {
+              const React = system.React;
+              return function WrappedServers(props) {
+                return React.createElement(
+                  "div",
+                  { className: "servers-with-custom" },
+                  React.createElement(Original, props),
+                  React.createElement(
+                    "form",
+                    {
+                      className: "server-bar",
+                      id: "server-form",
+                      onSubmit: function (event) {
+                        event.preventDefault();
+                        applyServer(event.currentTarget.elements.url.value.trim());
+                      }
+                    },
+                    React.createElement("label", { htmlFor: "server-url" }, "任意の URL"),
+                    React.createElement("input", {
+                      id: "server-url",
+                      name: "url",
+                      type: "url",
+                      required: true,
+                      placeholder: "http://localhost:3000",
+                      defaultValue: defaultServer()
+                    }),
+                    React.createElement("button", { type: "submit" }, "適用")
+                  )
+                );
+              };
+            }
+          }
+        };
+      }],
+      onComplete: mountServerBar
     });
   </script>
 </body>
