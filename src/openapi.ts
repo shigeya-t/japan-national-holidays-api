@@ -18,7 +18,16 @@ export function openApiDocument(store: HolidayStore) {
         "内閣府の国民の祝日 CSV をデータ源とする REST API。",
         "タイムゾーンは Asia/Tokyo。kind は推定値。会社独自の休日は含まない。",
         `収録期間: ${health.from} 〜 ${health.until}`,
+        "参照先: [https://github.com/shigeya-t/japan-national-holidays-api](https://github.com/shigeya-t/japan-national-holidays-api)",
       ].join("\n\n"),
+      contact: {
+        name: "GitHub",
+        url: "https://github.com/shigeya-t/japan-national-holidays-api",
+      },
+    },
+    externalDocs: {
+      description: "参照先",
+      url: "https://github.com/shigeya-t/japan-national-holidays-api",
     },
     servers: [
       { url: "/", description: "このサーバー" },
