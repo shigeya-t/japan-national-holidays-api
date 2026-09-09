@@ -1,12 +1,4 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "hono",
-  "functions": {
-    "src/app.ts": {
-      "includeFiles": "data/**"
-    },
-    "src/index.ts": {
-      "includeFiles": "data/**"
-    }
-  }
+  "framework": "hono"
 }
