@@ -4,6 +4,12 @@
 
 タイムゾーンは常に `Asia/Tokyo` です。会社独自の年末年始などは含みません。`kind`（国民の祝日 / 振替休日 / 国民の休日 / 祝日扱い / 皇室行事）は CSV 名称と前後の日から推定しています。
 
+## 今すぐみてみたい人のために
+
+公開中の Swagger UI はこちらです。
+
+[https://japan-national-holidays-api.vercel.app/docs](https://japan-national-holidays-api.vercel.app/docs)
+
 ## 起動
 
 ```bash

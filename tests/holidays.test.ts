@@ -208,6 +208,8 @@ describe("REST", () => {
     expect(body.paths["/v1/lookup"]).toBeDefined();
     expect(body.paths["/v1/holidays"]).toBeDefined();
     expect(body.servers?.some((server: { url: string }) => server.url === "{url}")).toBe(true);
+    expect(body.servers?.some((server: { url: string }) => server.url === "https://japan-national-holidays-api.vercel.app")).toBe(true);
+    expect(body.servers?.some((server: { url: string }) => server.url === "http://localhost:3000")).toBe(true);
     expect(body.info?.description).toContain("https://github.com/shigeya-t/japan-national-holidays-api");
     expect(body.info?.contact?.url).toBe("https://github.com/shigeya-t/japan-national-holidays-api");
     expect(body.externalDocs?.url).toBe("https://github.com/shigeya-t/japan-national-holidays-api");
@@ -223,6 +225,8 @@ describe("REST", () => {
     expect(html).toContain("日本の祝日 API");
     expect(html).toContain('id="server-url"');
     expect(html).toContain("https://github.com/shigeya-t/japan-national-holidays-api");
+    expect(html).toContain("https://japan-national-holidays-api.vercel.app");
+    expect(html).toContain("http://localhost:3000");
   });
 });
 
