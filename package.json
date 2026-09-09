@@ -2,6 +2,7 @@
   "name": "japan-national-holidays-api",
   "version": "1.0.0",
   "description": "日本の国民の祝日 REST API と MCP サーバー",
+  "license": "MIT",
   "type": "module",
   "engines": {
     "node": ">=22"

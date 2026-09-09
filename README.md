@@ -85,3 +85,7 @@ docker run -p 3000:3000 japan-national-holidays-api
 ```bash
 npm run update-csv
 ```
+
+## License
+
+[MIT License](LICENSE)
