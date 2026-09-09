@@ -7,10 +7,11 @@ if (process.env.VERCEL && process.env.HOLIDAYS_SKIP_FETCH !== "0") {
 }
 
 const store = new HolidayStore();
-await store.init();
-if (!process.env.VERCEL && !process.env.VITEST) {
-  store.startRefresh();
-}
+export const ready = store.init().then(() => {
+  if (!process.env.VERCEL && !process.env.VITEST) {
+    store.startRefresh();
+  }
+});
 
-const app: Hono = createApp(store);
+const app: Hono = createApp(store, { ready });
 export default app;

@@ -32,8 +32,14 @@ function parseQuery<T>(schema: z.ZodType<T>, raw: Record<string, string>): T {
   return parsed.data;
 }
 
-export function createApp(store: HolidayStore): Hono {
+export function createApp(store: HolidayStore, options?: { ready?: Promise<void> }): Hono {
   const app = new Hono();
+  if (options?.ready) {
+    app.use(async (_c, next) => {
+      await options.ready;
+      await next();
+    });
+  }
   app.use("*", cors());
 
   app.onError((error, c) => {
