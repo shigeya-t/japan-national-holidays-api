@@ -3,15 +3,7 @@
   "info": {
     "title": "日本の祝日 API",
     "version": "1.0.0",
-    "description": "内閣府の国民の祝日 CSV をデータ源とする REST API。\n\nタイムゾーンは Asia/Tokyo。kind は推定値。会社独自の休日は含まない。\n\n収録期間: 1955-01-01 〜 2027-12-31\n\n参照先: [https://github.com/shigeya-t/japan-national-holidays-api](https://github.com/shigeya-t/japan-national-holidays-api)",
-    "contact": {
-      "name": "GitHub",
-      "url": "https://github.com/shigeya-t/japan-national-holidays-api"
-    }
-  },
-  "externalDocs": {
-    "description": "参照先",
-    "url": "https://github.com/shigeya-t/japan-national-holidays-api"
+    "description": "内閣府の国民の祝日 CSV をデータ源とする REST API。\n\nタイムゾーンは Asia/Tokyo。kind は推定値。会社独自の休日は含まない。\n\n収録期間: 1955-01-01 〜 2027-12-31\n\n参照先: [https://github.com/shigeya-t/japan-national-holidays-api](https://github.com/shigeya-t/japan-national-holidays-api)"
   },
   "servers": [
     {
