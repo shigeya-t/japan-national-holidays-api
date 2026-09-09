@@ -226,8 +226,10 @@ describe("REST", () => {
     expect(html).toContain("参照先: [https://github.com/shigeya-t/japan-national-holidays-api](https://github.com/shigeya-t/japan-national-holidays-api)");
     expect(html).not.toContain('"contact"');
     expect(html).not.toContain('"externalDocs"');
-    expect(html).toContain("https://japan-national-holidays-api.vercel.app");
-    expect(html).toContain("http://localhost:3000");
+    expect(html).toContain('"url":"https://japan-national-holidays-api.vercel.app"');
+    expect(html).toContain('"url":"http://localhost:3000"');
+    expect(html).toContain("builtinServers");
+    expect(html).not.toContain("applyServer(initial)");
   });
 });
 

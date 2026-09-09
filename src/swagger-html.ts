@@ -53,6 +53,7 @@ export function renderSwaggerHtml(spec: unknown): string {
   <script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-bundle.js" crossorigin></script>
   <script>
     const spec = ${specJson};
+    const builtinServers = Array.isArray(spec.servers) ? spec.servers.slice() : [];
     function defaultServer() {
       if (location.protocol === "file:" || location.origin === "null") {
         return "http://localhost:3000";
@@ -61,14 +62,17 @@ export function renderSwaggerHtml(spec: unknown): string {
     }
     function applyServer(url) {
       const normalized = url.replace(/\\/$/, "");
-      spec.servers = [{ url: normalized || "/", description: "指定したサーバー" }];
+      if (!normalized) {
+        spec.servers = builtinServers.slice();
+      } else {
+        const custom = { url: normalized, description: "指定したサーバー" };
+        spec.servers = [custom, ...builtinServers.filter((server) => server.url !== custom.url)];
+      }
       if (window.ui) {
         window.ui.specActions.updateJsonSpec(structuredClone(spec));
       }
     }
-    const initial = defaultServer();
-    document.getElementById("server-url").value = initial;
-    applyServer(initial);
+    document.getElementById("server-url").value = defaultServer();
     window.ui = SwaggerUIBundle({
       spec,
       dom_id: "#swagger-ui",
