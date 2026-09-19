@@ -18,21 +18,17 @@ npm test
 npm run dev
 ```
 
-`HOLIDAYS_SKIP_FETCH=1` を付けると公式 CSV を取りに行かず、バンドル済み CSV だけを使います。Cloudflare Workers 上では常にバンドル済み CSV を使います。
-
-Workers ランタイムでのローカル確認:
-
-```bash
-npm run dev:worker
-```
-
-`http://localhost:8787` で起動します。
+`HOLIDAYS_SKIP_FETCH=1` を付けると公式 CSV を取りに行かず、バンドル済み CSV だけを使います。
 
 ## Swagger
 
 - UI: [http://localhost:3000/docs](http://localhost:3000/docs)（`/swagger` も同じ）
 - OpenAPI 3.1: [http://localhost:3000/openapi.json](http://localhost:3000/openapi.json)
+- 公開 UI: [https://japan-national-holidays-api.st-demo.workers.dev/docs](https://japan-national-holidays-api.st-demo.workers.dev/docs)
+- 公開 OpenAPI: [https://japan-national-holidays-api.st-demo.workers.dev/openapi.json](https://japan-national-holidays-api.st-demo.workers.dev/openapi.json)
 - 静的ファイル: [`docs/swagger.html`](docs/swagger.html) / [`docs/openapi.json`](docs/openapi.json)（`npm run generate-swagger` で再生成）
+
+公開サーバーの URL は [`src/openapi.ts`](src/openapi.ts) の `PUBLIC_API_URL` です。実行中の `/docs` と `/openapi.json` もここから組み立てます。
 
 ## REST
 
@@ -79,20 +75,26 @@ npm run dev:worker
 
 ## Cloudflare Workers
 
-公開 URL は [https://japan-national-holidays-api.st-demo.workers.dev](https://japan-national-holidays-api.st-demo.workers.dev) です。`main` への push で GitHub Actions から `wrangler deploy` します。リポジトリ Secrets に次を入れてください（未設定だと Deploy ジョブが失敗します）。
+[https://japan-national-holidays-api.st-demo.workers.dev](https://japan-national-holidays-api.st-demo.workers.dev) で公開しています。Workers 上ではバンドル済み CSV を使います。`main` への push で GitHub Actions からデプロイします。
 
-- `CLOUDFLARE_API_TOKEN`（Workers 編集権限。公式の Edit Cloudflare Workers テンプレートで可）
-- `CLOUDFLARE_ACCOUNT_ID`
+```bash
+npm run dev:worker
+```
 
-Vercel の Git 連携が残っていると commit status が失敗します。ダッシュボードから外してください。
-
-手動デプロイ:
+`http://localhost:8787` で起動します。手元からデプロイする場合は `npx wrangler login` したうえで:
 
 ```bash
 npm run deploy
 ```
 
-PR では `wrangler deploy --dry-run` のみ実行し、本番へは上げません。
+自分の Cloudflare アカウントへ GitHub Actions で載せるときは、フォーク先リポジトリの Settings → Secrets and variables → Actions に次を入れてください。
+
+- `CLOUDFLARE_API_TOKEN` — [Edit Cloudflare Workers](https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/) テンプレートで発行した API トークン
+- `CLOUDFLARE_ACCOUNT_ID` — ダッシュボードの [Account ID](https://developers.cloudflare.com/fundamentals/account/find-account-and-zone-ids/)（Zone ID ではない）
+
+未設定だと Deploy ジョブは失敗します。PR では `wrangler deploy --dry-run` のみ実行し、本番へは上げません。
+
+自分の `*.workers.dev` ホストに合わせるときは [`src/openapi.ts`](src/openapi.ts) の `PUBLIC_API_URL` を直し、`npm run generate-swagger` で [`docs/openapi.json`](docs/openapi.json) と [`docs/swagger.html`](docs/swagger.html) を再生成してください。
 
 ## Docker / GHCR
 
