@@ -18,15 +18,7 @@ npm test
 npm run dev
 ```
 
-`HOLIDAYS_SKIP_FETCH=1` を付けると公式 CSV を取りに行かず、バンドル済み CSV だけを使います。Cloudflare Workers 上では常にバンドル済み CSV を使います。
-
-Workers ランタイムでのローカル確認:
-
-```bash
-npm run dev:worker
-```
-
-`http://localhost:8787` で起動します。
+`HOLIDAYS_SKIP_FETCH=1` を付けると公式 CSV を取りに行かず、バンドル済み CSV だけを使います。
 
 ## Swagger
 
@@ -79,20 +71,17 @@ npm run dev:worker
 
 ## Cloudflare Workers
 
-公開 URL は [https://japan-national-holidays-api.st-demo.workers.dev](https://japan-national-holidays-api.st-demo.workers.dev) です。`main` への push で GitHub Actions から `wrangler deploy` します。リポジトリ Secrets に次を入れてください（未設定だと Deploy ジョブが失敗します）。
+[https://japan-national-holidays-api.st-demo.workers.dev](https://japan-national-holidays-api.st-demo.workers.dev) で公開しています。Workers 上ではバンドル済み CSV を使います。`main` への push で GitHub Actions からデプロイします。
 
-- `CLOUDFLARE_API_TOKEN`（Workers 編集権限。公式の Edit Cloudflare Workers テンプレートで可）
-- `CLOUDFLARE_ACCOUNT_ID`
+```bash
+npm run dev:worker
+```
 
-Vercel の Git 連携が残っていると commit status が失敗します。ダッシュボードから外してください。
-
-手動デプロイ:
+`http://localhost:8787` で起動します。手元からデプロイする場合:
 
 ```bash
 npm run deploy
 ```
-
-PR では `wrangler deploy --dry-run` のみ実行し、本番へは上げません。
 
 ## Docker / GHCR
 
