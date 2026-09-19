@@ -31,5 +31,7 @@ jobs:
           base: main
           title: "chore: update bundled holidays CSV"
           body: |
-            内閣府の公式 CSV を取得し、`data/syukujitsu.csv` を更新しました。
-          add-paths: data/syukujitsu.csv
+            内閣府の公式 CSV を取得し、`data/syukujitsu.csv` と埋め込みデータを更新しました。
+          add-paths: |
+            data/syukujitsu.csv
+            src/holidays/bundled-csv-text.ts

@@ -1,5 +1,9 @@
 import type { HolidayStore } from "./holidays/store.js";
 
+/** 初回デプロイ後の `*.workers.dev` URL に合わせて更新する */
+export const PUBLIC_API_URL = "https://japan-national-holidays-api.workers.dev";
+export const LOCAL_API_URL = "http://localhost:3000";
+
 const dateInfoRef = { $ref: "#/components/schemas/DateInfo" };
 const errorRef = { $ref: "#/components/schemas/Error" };
 
@@ -22,8 +26,8 @@ export function openApiDocument(store: HolidayStore) {
       ].join("\n\n"),
     },
     servers: [
-      { url: "https://japan-national-holidays-api.vercel.app", description: "公開" },
-      { url: "http://localhost:3000", description: "ローカル" },
+      { url: PUBLIC_API_URL, description: "公開" },
+      { url: LOCAL_API_URL, description: "ローカル" },
     ],
     tags: [
       { name: "health", description: "稼働状況" },

@@ -6,9 +6,9 @@
 
 ## 今すぐみてみたい人のために
 
-公開中の Swagger UI はこちらです。
+公開中の Swagger UI は Cloudflare Workers 上にあります。初回デプロイ後の URL はダッシュボードの `*.workers.dev` です。OpenAPI の公開サーバーは [`src/openapi.ts`](src/openapi.ts) の `PUBLIC_API_URL` と揃えてください。
 
-[https://japan-national-holidays-api.vercel.app/docs](https://japan-national-holidays-api.vercel.app/docs)
+[https://japan-national-holidays-api.workers.dev/docs](https://japan-national-holidays-api.workers.dev/docs)
 
 ## 起動
 
@@ -18,7 +18,15 @@ npm test
 npm run dev
 ```
 
-`HOLIDAYS_SKIP_FETCH=1` を付けると公式 CSV を取りに行かず、`data/syukujitsu.csv` だけを使います。
+`HOLIDAYS_SKIP_FETCH=1` を付けると公式 CSV を取りに行かず、バンドル済み CSV だけを使います。Cloudflare Workers 上では常にバンドル済み CSV を使います。
+
+Workers ランタイムでのローカル確認:
+
+```bash
+npm run dev:worker
+```
+
+`http://localhost:8787` で起動します。
 
 ## Swagger
 
@@ -69,6 +77,21 @@ npm run dev
 
 ツール: `lookup_holiday`, `lookup_today`, `next_holidays`, `is_business_day`, `search_holidays`, `list_holidays`
 
+## Cloudflare Workers
+
+`main` への push で GitHub Actions から `wrangler deploy` します。リポジトリ Secrets に次を入れてください。
+
+- `CLOUDFLARE_API_TOKEN`（Workers 編集権限。公式の Edit Cloudflare Workers テンプレートで可）
+- `CLOUDFLARE_ACCOUNT_ID`
+
+手動デプロイ:
+
+```bash
+npm run deploy
+```
+
+PR では `wrangler deploy --dry-run` のみ実行し、本番へは上げません。
+
 ## Docker / GHCR
 
 ```bash
@@ -80,7 +103,7 @@ docker run -p 3000:3000 japan-national-holidays-api
 
 ## バンドル CSV の更新
 
-毎月 1 日と手動実行で公式 CSV を取り、差分があれば `chore/update-holidays-csv` から PR を作ります。ヘッダー・行数・重複日付を検証し、壊れたファイルは PR しません。
+毎月 1 日と手動実行で公式 CSV を取り、差分があれば `chore/update-holidays-csv` から PR を作ります。ヘッダー・行数・重複日付を検証し、壊れたファイルは PR しません。`data/syukujitsu.csv` と `src/holidays/bundled-csv-text.ts` を同時に更新します。
 
 ```bash
 npm run update-csv

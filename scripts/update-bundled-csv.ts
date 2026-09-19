@@ -9,3 +9,5 @@ const utf8 = text.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n").replace(/\r/g, "
 const normalized = utf8.endsWith("\n") ? utf8 : `${utf8}\n`;
 await writeFile(dest, normalized, "utf8");
 console.log(`wrote ${records.length} holidays to ${dest} (${records[0]?.date} .. ${records.at(-1)?.date})`);
+
+await import("./embed-bundled-csv.js");
