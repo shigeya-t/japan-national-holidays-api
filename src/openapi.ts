@@ -1,7 +1,6 @@
 import type { HolidayStore } from "./holidays/store.js";
 
-/** 初回デプロイ後の `*.workers.dev` URL に合わせて更新する */
-export const PUBLIC_API_URL = "https://japan-national-holidays-api.workers.dev";
+export const PUBLIC_API_URL = "https://japan-national-holidays-api.st-demo.workers.dev";
 export const LOCAL_API_URL = "http://localhost:3000";
 
 const dateInfoRef = { $ref: "#/components/schemas/DateInfo" };
