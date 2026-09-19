@@ -79,10 +79,12 @@ npm run dev:worker
 
 ## Cloudflare Workers
 
-`main` への push で GitHub Actions から `wrangler deploy` します。リポジトリ Secrets に次を入れてください。
+`main` への push で GitHub Actions から `wrangler deploy` します。リポジトリ Secrets に次を入れてください（未設定だと Deploy ジョブが失敗します）。
 
 - `CLOUDFLARE_API_TOKEN`（Workers 編集権限。公式の Edit Cloudflare Workers テンプレートで可）
 - `CLOUDFLARE_ACCOUNT_ID`
+
+Vercel の Git 連携が残っていると commit status が失敗します。ダッシュボードから外してください。
 
 手動デプロイ:
 
