@@ -24,7 +24,11 @@ npm run dev
 
 - UI: [http://localhost:3000/docs](http://localhost:3000/docs)（`/swagger` も同じ）
 - OpenAPI 3.1: [http://localhost:3000/openapi.json](http://localhost:3000/openapi.json)
+- 公開 UI: [https://japan-national-holidays-api.st-demo.workers.dev/docs](https://japan-national-holidays-api.st-demo.workers.dev/docs)
+- 公開 OpenAPI: [https://japan-national-holidays-api.st-demo.workers.dev/openapi.json](https://japan-national-holidays-api.st-demo.workers.dev/openapi.json)
 - 静的ファイル: [`docs/swagger.html`](docs/swagger.html) / [`docs/openapi.json`](docs/openapi.json)（`npm run generate-swagger` で再生成）
+
+公開サーバーの URL は [`src/openapi.ts`](src/openapi.ts) の `PUBLIC_API_URL` です。実行中の `/docs` と `/openapi.json` もここから組み立てます。
 
 ## REST
 
@@ -89,6 +93,8 @@ npm run deploy
 - `CLOUDFLARE_ACCOUNT_ID` — ダッシュボードの [Account ID](https://developers.cloudflare.com/fundamentals/account/find-account-and-zone-ids/)（Zone ID ではない）
 
 未設定だと Deploy ジョブは失敗します。PR では `wrangler deploy --dry-run` のみ実行し、本番へは上げません。
+
+自分の `*.workers.dev` ホストに合わせるときは [`src/openapi.ts`](src/openapi.ts) の `PUBLIC_API_URL` を直し、`npm run generate-swagger` で [`docs/openapi.json`](docs/openapi.json) と [`docs/swagger.html`](docs/swagger.html) を再生成してください。
 
 ## Docker / GHCR
 
