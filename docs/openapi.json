@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://japan-national-holidays-api.workers.dev",
+      "url": "https://japan-national-holidays-api.st-demo.workers.dev",
       "description": "公開"
     },
     {

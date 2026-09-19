@@ -6,9 +6,9 @@
 
 ## 今すぐみてみたい人のために
 
-公開中の Swagger UI は Cloudflare Workers 上にあります。初回デプロイ後の URL はダッシュボードの `*.workers.dev` です。OpenAPI の公開サーバーは [`src/openapi.ts`](src/openapi.ts) の `PUBLIC_API_URL` と揃えてください。
+公開中の Swagger UI はこちらです。
 
-[https://japan-national-holidays-api.workers.dev/docs](https://japan-national-holidays-api.workers.dev/docs)
+[https://japan-national-holidays-api.st-demo.workers.dev/docs](https://japan-national-holidays-api.st-demo.workers.dev/docs)
 
 ## 起動
 
@@ -79,7 +79,7 @@ npm run dev:worker
 
 ## Cloudflare Workers
 
-`main` への push で GitHub Actions から `wrangler deploy` します。リポジトリ Secrets に次を入れてください（未設定だと Deploy ジョブが失敗します）。
+公開 URL は [https://japan-national-holidays-api.st-demo.workers.dev](https://japan-national-holidays-api.st-demo.workers.dev) です。`main` への push で GitHub Actions から `wrangler deploy` します。リポジトリ Secrets に次を入れてください（未設定だと Deploy ジョブが失敗します）。
 
 - `CLOUDFLARE_API_TOKEN`（Workers 編集権限。公式の Edit Cloudflare Workers テンプレートで可）
 - `CLOUDFLARE_ACCOUNT_ID`
