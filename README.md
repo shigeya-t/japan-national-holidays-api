@@ -77,11 +77,18 @@ npm run dev
 npm run dev:worker
 ```
 
-`http://localhost:8787` で起動します。手元からデプロイする場合:
+`http://localhost:8787` で起動します。手元からデプロイする場合は `npx wrangler login` したうえで:
 
 ```bash
 npm run deploy
 ```
+
+自分の Cloudflare アカウントへ GitHub Actions で載せるときは、フォーク先リポジトリの Settings → Secrets and variables → Actions に次を入れてください。
+
+- `CLOUDFLARE_API_TOKEN` — [Edit Cloudflare Workers](https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/) テンプレートで発行した API トークン
+- `CLOUDFLARE_ACCOUNT_ID` — ダッシュボードの [Account ID](https://developers.cloudflare.com/fundamentals/account/find-account-and-zone-ids/)（Zone ID ではない）
+
+未設定だと Deploy ジョブは失敗します。PR では `wrangler deploy --dry-run` のみ実行し、本番へは上げません。
 
 ## Docker / GHCR
 
