@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://japan-national-holidays-api.vercel.app",
+      "url": "https://japan-national-holidays-api.workers.dev",
       "description": "公開"
     },
     {

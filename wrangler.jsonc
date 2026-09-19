@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "japan-national-holidays-api",
+  "main": "src/app.ts",
+  "compatibility_date": "2026-09-19",
+  // MCP SDK / iconv-lite が Node 組み込みを参照する
+  "compatibility_flags": ["nodejs_compat"],
+  "minify": true,
+  "observability": {
+    "enabled": true
+  }
+}

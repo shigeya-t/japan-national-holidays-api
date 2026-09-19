@@ -1,16 +1,8 @@
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { BUNDLED_CSV_TEXT } from "./bundled-csv-text.js";
 import { fetchOfficialCsv, parseHolidayCsv, readBundledCsv } from "./csv.js";
 import type { DataSource, HolidayRecord } from "./types.js";
 
 const REFRESH_MS = 24 * 60 * 60 * 1000;
-
-export function bundledCsvPath(): string {
-  return (
-    process.env.BUNDLED_CSV_PATH ??
-    path.join(path.dirname(fileURLToPath(import.meta.url)), "../../data/syukujitsu.csv")
-  );
-}
 
 export class HolidayStore {
   records: HolidayRecord[] = [];
@@ -48,15 +40,21 @@ export class HolidayStore {
         console.warn("official CSV fetch failed, using bundled snapshot", error);
       }
     }
-    const text = await readBundledCsv(bundledCsvPath());
-    this.load(parseHolidayCsv(text), "bundled");
+    if (process.env.BUNDLED_CSV_PATH) {
+      const text = await readBundledCsv(process.env.BUNDLED_CSV_PATH);
+      this.load(parseHolidayCsv(text), "bundled");
+      return;
+    }
+    this.load(parseHolidayCsv(BUNDLED_CSV_TEXT), "bundled");
   }
 
   startRefresh(): void {
     this.#timer = setInterval(() => {
       void this.refresh();
     }, REFRESH_MS);
-    this.#timer.unref();
+    if (typeof this.#timer === "object" && this.#timer !== null && "unref" in this.#timer) {
+      this.#timer.unref();
+    }
   }
 
   async refresh(): Promise<void> {

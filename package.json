@@ -9,12 +9,16 @@
   },
   "scripts": {
     "dev": "tsx watch src/index.ts",
+    "dev:worker": "wrangler dev",
     "start": "node dist/index.js",
     "build": "tsc -p tsconfig.build.json && npm run generate-swagger",
     "test": "HOLIDAYS_SKIP_FETCH=1 vitest run",
     "test:watch": "HOLIDAYS_SKIP_FETCH=1 vitest",
     "update-csv": "tsx scripts/update-bundled-csv.ts",
-    "generate-swagger": "HOLIDAYS_SKIP_FETCH=1 tsx scripts/generate-swagger.ts"
+    "embed-csv": "tsx scripts/embed-bundled-csv.ts",
+    "generate-swagger": "HOLIDAYS_SKIP_FETCH=1 tsx scripts/generate-swagger.ts",
+    "deploy": "wrangler deploy",
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
   },
   "dependencies": {
     "@hono/mcp": "^0.3.2",
@@ -29,6 +33,7 @@
     "@types/node": "^26.5.0",
     "tsx": "^4.23.13",
     "typescript": "^6.0.3",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "wrangler": "^4.135.0"
   }
 }

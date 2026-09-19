@@ -2,7 +2,9 @@ import { readFile } from "node:fs/promises";
 import iconv from "iconv-lite";
 import { beforeAll, describe, expect, it } from "vitest";
 import { createApp } from "../src/create-app.js";
+import { BUNDLED_CSV_TEXT } from "../src/holidays/bundled-csv-text.js";
 import { decodeCsv, parseHolidayCsv } from "../src/holidays/csv.js";
+import { LOCAL_API_URL, PUBLIC_API_URL } from "../src/openapi.js";
 import { classifyKind } from "../src/holidays/kind.js";
 import { lookupDate, nextHolidays } from "../src/holidays/lookup.js";
 import { searchHolidays } from "../src/holidays/search.js";
@@ -22,6 +24,11 @@ describe("csv decode", () => {
     const fromSjis = parseHolidayCsv(decodeCsv(sjis));
     expect(fromUtf8.length).toBeGreaterThan(500);
     expect(fromSjis).toEqual(fromUtf8);
+  });
+
+  it("embeds the same bytes as data/syukujitsu.csv", async () => {
+    const utf8 = await readFile("data/syukujitsu.csv", "utf8");
+    expect(BUNDLED_CSV_TEXT).toBe(utf8);
   });
 });
 
@@ -208,8 +215,8 @@ describe("REST", () => {
     expect(body.paths["/v1/lookup"]).toBeDefined();
     expect(body.paths["/v1/holidays"]).toBeDefined();
     expect(body.servers).toEqual([
-      { url: "https://japan-national-holidays-api.vercel.app", description: "公開" },
-      { url: "http://localhost:3000", description: "ローカル" },
+      { url: PUBLIC_API_URL, description: "公開" },
+      { url: LOCAL_API_URL, description: "ローカル" },
     ]);
     expect(body.info?.description).toContain("参照先: [https://github.com/shigeya-t/japan-national-holidays-api](https://github.com/shigeya-t/japan-national-holidays-api)");
     expect(body.info?.contact).toBeUndefined();
@@ -226,8 +233,8 @@ describe("REST", () => {
     expect(html).toContain("参照先: [https://github.com/shigeya-t/japan-national-holidays-api](https://github.com/shigeya-t/japan-national-holidays-api)");
     expect(html).not.toContain('"contact"');
     expect(html).not.toContain('"externalDocs"');
-    expect(html).toContain('"url":"https://japan-national-holidays-api.vercel.app"');
-    expect(html).toContain('"url":"http://localhost:3000"');
+    expect(html).toContain(`"url":"${PUBLIC_API_URL}"`);
+    expect(html).toContain(`"url":"${LOCAL_API_URL}"`);
     expect(html).not.toContain('"url":"/"');
     expect(html).not.toContain('"{url}"');
     expect(html).toContain('id="server-form-template"');
@@ -244,10 +251,10 @@ describe("REST", () => {
   });
 });
 
-describe("Vercel default export", () => {
+describe("Workers default export", () => {
   it("src/app.ts default export serves /health", async () => {
-    const { default: vercelApp } = await import("../src/app.js");
-    const res = await vercelApp.request("/health");
+    const { default: workerApp } = await import("../src/app.js");
+    const res = await workerApp.request("/health");
     expect(res.status).toBe(200);
     expect(await res.json()).toMatchObject({ ok: true });
   });
